@@ -24,6 +24,6 @@ python train_linear_probes.py --train --vision-encoder CLIP
 ### Compute MPR score
 
 ```
-
+python main_eval.py --dataset-path ../representational-generation/datasets/scratch/SD_14/CEO --refer-dataset fairface --functionclass dt1 --target-concept CEO --pool-size 500  --bootstrapping --resampling-size 500 --n-resampling 10 --mpr-onehot --mpr-group gender
 ```
 
