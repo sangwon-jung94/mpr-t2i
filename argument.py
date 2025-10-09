@@ -16,21 +16,22 @@ def get_args():
     
     # For coupmting MPR
     parser.add_argument('--refer-dataset', type=str, default='fairface', choices=['uniform', 'fairface', 'custom','stable_bias_i','statistics'])
-    parser.add_argument('--query-dataset', type=str, default='CLIP')
     parser.add_argument('--dataset-path', type=str, default=None, help='it is only used when query-dataset is general')
     parser.add_argument('--p-ver', type=str, default='v1', help='version of prompts used for generating')
     parser.add_argument('--vision-encoder', type=str, default='CLIP', 
                         choices = ['BLIP', 'CLIP', 'PATHS'])
     parser.add_argument('--target-concept', type=str, default='all')
-    parser.add_argument('--target-model', type=str, default='SD_14') #required=True, 
+    # parser.add_argument('--target-model', type=str, default='SD_14') #required=True, 
     parser.add_argument('--mpr-group', type=str, nargs='+', default=['gender','age','race'])    
     parser.add_argument('--mpr-onehot', default=False, action='store_true', help='onehot group estimation')
     parser.add_argument('--race-reduce', default=False, action='store_true', help='reduce the category of race')
     parser.add_argument('--n-compute-mpr', type=int, default=1)
-    parser.add_argument('--bootstrapping', default=False, action='store_true', help='bootstrapping')
     parser.add_argument('--bal-sampling', default=False, action='store_true', help='balanced sampling over groups1')
     parser.add_argument('--n-resampling', type=int, default=1000, help='bootstrapping')
     parser.add_argument('--resampling-size', default=1000, type=int, help='bootstrapping')
+    parser.add_argument('--bootstrapping', default=False, action='store_true', help='bootstrapping')
+
+
     parser.add_argument('--normalize', default=False, action='store_true', help='normalization for x')
     parser.add_argument('--functionclass', type=str, default='linear', help='functionclass for mpr') # choices=['linear','dt','nn','l2'],    
     

@@ -38,7 +38,6 @@ def get_args():
     parser.add_argument('--save-dir', type=str, default='results/', help='directory to save the results')
 
     # for finetuning
-    parser.add_argument('--finetuning-ver', type=str, default='ver1',choices = ['ver1','ver2','ver3'])
     parser.add_argument('--normalize', default=False, action='store_true', help='normalization for x')
     
     parser.add_argument('--mpr_num_batches', type=int, default=4, help='the number of batches for computing MPRs')
@@ -200,7 +199,6 @@ def get_args():
         type=int, 
         default=8
         )    
-
 
     # experiment input and output paths
     parser.add_argument(

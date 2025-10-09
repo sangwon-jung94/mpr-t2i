@@ -39,7 +39,7 @@ def main(args):
     print(dm.name_or_path)
     _trainer = trainer.TrainerFactory.get_trainer(trainername=args.trainer, model=dm, args=args)    
 
-    if args.trainer in ['finetuning', 'rag']:
+    if args.trainer in ['finetuning']:
         logger = get_logger(__name__)
         logging_dir = Path(args.output_dir, args.logging_dir)
 
@@ -60,13 +60,6 @@ def main(args):
             kwargs_handlers=[kwargs]
         )
 
-        # if args.report_to == "wandb":
-        #     if not is_wandb_available():
-        #         raise ImportError("Make sure to install wandb if you want to use it for logging during training.")
-        #     import wandb
-        # else:
-        #     raise ValueError("--report_to must be set to 'wanb', others are not implemented.")
-        
         # Make one log on every process with the configuration for debugging.
         logging.basicConfig(
             format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
@@ -88,13 +81,10 @@ def main(args):
                 
         # We need to initialize the trackers we use, and also store our configuration.
         # The trackers initializes automatically on the main process.
-
-        # folder_name = f"{args.trainer}/{args.train_images_per_prompt_GPU*accelerator.num_processes}_wImg-{args.weight_loss_img}-{args.factor1}-{args.factor2}_wFace-{args.weight_loss_face}_Th-{args.uncertainty_threshold}_loraR-{args.rank}_lr-{args.learning_rate}"#_{timestring}"
         group_name = "".join([g[0].upper() for g in args.trainer_group])
-        # group_name = args.group[0]
 
         prompt_file_name = args.prompt_occupation_path.split('/')[-1].split('.')[0]
-        folder_name = f"{args.train_images_per_prompt_GPU*accelerator.num_processes}_wImg-{args.weight_loss_img}-loraR-{args.rank}_lr-{args.learning_rate}_{prompt_file_name}"#_{timestring}"
+        folder_name = f"{args.train_images_per_prompt_GPU*accelerator.num_processes}_wImg-{args.weight_loss_img}-loraR-{args.rank}_lr-{args.learning_rate}_{prompt_file_name}"
         if args.finetuning_ver == 'ver3':
             folder_name += f'_{args.temp}'
         if args.finetuning_ver == 'ver1':
@@ -141,10 +131,6 @@ def main(args):
     filename = f'{args.date}_{groupname}'
     torch.save(model, os.path.join(save_dir, f'{filename}.pt'))
         
-    # Get the required model
-
-    # Train the model
-
     wandb.finish()
 
 if __name__ == '__main__':
@@ -168,9 +154,6 @@ if __name__ == '__main__':
 
     np.set_printoptions(precision=4)
     torch.set_printoptions(precision=4)
-
-    # set_seed(args.seed)
-
 
     now = datetime.datetime.now()
     # Format as 'ddmmyyHMS'

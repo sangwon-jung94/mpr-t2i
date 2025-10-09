@@ -14,7 +14,7 @@ class DataloaderFactory:
         pass
 
     @staticmethod
-    def get_dataloader(dataname, args):
+    def get_dataloader(args, dataname='general'):
         # Make a transform function
         processor = None
         transform = None
@@ -26,15 +26,6 @@ class DataloaderFactory:
         elif args.vision_encoder == 'CLIP':
             import clip
             _, transform = clip.load("ViT-B/32", device= 'cpu')
-            # print(transform)
-            # mean = [0.48145466, 0.4578275, 0.40821073]
-            # std = [0.26862954, 0.26130258, 0.27577711]
-            # transform = transforms.Compose(
-            #                  [
-            #                     transforms.Resize((224,224)),
-            #                     transforms.CenterCrop(224),
-            #         transforms.Normalize(mean=mean, std=std)]
-            # )
 
         else:
             # For CelebA
@@ -54,18 +45,6 @@ class DataloaderFactory:
                     transforms.Normalize(mean=mean, std=std)] 
                 )
             
-        if args.trainer == 'rag':
-            processor = transforms.Compose(
-                [
-                    transforms.Resize((256, 256)),
-                    transforms.RandomHorizontalFlip(),
-                    transforms.ToTensor(),
-                    transforms.Normalize([0.5], [0.5]),
-                ]
-            )
-            import clip
-            _, transform = clip.load("ViT-L/14", device= 'cpu')
-
 
         def _init_fn(worker_id):
             np.random.seed(int(args.seed))

@@ -34,7 +34,6 @@ class FairFace(GenericDataset):
         races = ['East Asian', 'Indian', 'Black', 'White', 'Middle Eastern', 'Latino_Hispanic', 'Southeast Asian']
         # races = ['White', 'Black', 'Latino_Hispanic', 'Asian']
                         
-        # for i, race in enumerate(df.race.unique()):
         for i, race in enumerate(races):
             self.labeltags.append(race)
             self.race_to_idx[race] = i
@@ -66,7 +65,6 @@ class FairFace(GenericDataset):
 
         # if self.args.binarize_age:
         age_idx = [int(ag>4) for ag in age_idx]
-        ## labels is [gender_binary, age_categorical, race_one_hot]
 
         self.labels = []
         for i in range(len(gender_idx)):
@@ -75,6 +73,7 @@ class FairFace(GenericDataset):
         self.labels = torch.tensor(self.labels)
         self.img_paths = df.file.to_list()
         
+        # preprocess group labels for the reducded race
         if (hasattr(self.args, 'mpr_group') and 'race2' in self.args.mpr_group) or \
             (hasattr(self.args, 'trainer_group') and 'race2' in self.args.trainer_group):
         
@@ -98,18 +97,12 @@ class FairFace(GenericDataset):
             print('the number of total images:', len(self.img_paths))
             print('the number of remained images:', len(self.labels))
             self.img_paths = [self.img_paths[i] for i in total_indices]
-        # construct_path = lambda x: os.path.join(self.dataset_path, x)
 
     def __len__(self):
         return len(self.labels)
 
     def __getitem__(self, idx):
-        # if self.embedding_model is not None:
-        #     path = self.img_paths[idx]
-        #     image_id = path.split(".")[0]
-        #     embeddingpath = os.path.join(self.dataset_path, self.embedding_model, image_id+".pt")
-        #     return torch.load(embeddingpath), self.labels[idx]
-        
+
         path = os.path.join(self.dataset_path, self.img_paths[idx])
         image = Image.open(path).convert("RGB")
         if self.transform is not None:

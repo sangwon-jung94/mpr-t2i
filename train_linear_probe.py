@@ -1,6 +1,7 @@
 
 import torch
 import numpy as np
+import os
 from argument import get_args
 import pickle
 
@@ -14,7 +15,6 @@ from sklearn.model_selection import GridSearchCV
 def main():
     
     train_loader, test_loader = data_handler.DataloaderFactory.get_dataloader(dataname='fairface', args=args)
-    args.eval = True
     
     # Get the required model
     if args.vision_encoder != 'CLIP':
@@ -67,21 +67,8 @@ def main():
     test_fairface_race_labels = torch.cat(test_fairface_race_labels).cpu().numpy()
 
     parameters = {'C':[0.01, 0.1, 1, 10, 100]}
-
-    fairface_dic = {'embed' : fairface_embeds,
-                  'gender' : fairface_gender_labels,
-                  'age' : fairface_age_labels,
-                  'race' : fairface_race_labels}
     
-    # with open('fairface_embeddings.pkl', 'wb') as f:
-        # pickle.dump(fairface_dic, f)
-
-    print(fairface_embeds.shape)
-    print(fairface_age_labels.shape)
-    print(fairface_gender_labels.shape)
-    print(fairface_race_labels.shape)
-
-    if not args.eval:
+    if args.train:
         lr_age = LogisticRegression(penalty="l2", C=1)
         lr_gender = LogisticRegression(penalty="l2", C=1)
         lr_race = LogisticRegression(C=1, multi_class="multinomial", solver="saga")
@@ -90,27 +77,31 @@ def main():
         clf_gender = GridSearchCV(lr_gender, parameters)
         clf_race = GridSearchCV(lr_race, parameters)
 
-        # clf_age.fit(fairface_embeds, fairface_age_labels)
-        # clf_gender.fit(fairface_embeds, fairface_gender_labels)
+        clf_age.fit(fairface_embeds, fairface_age_labels)
+        clf_gender.fit(fairface_embeds, fairface_gender_labels)
         clf_race.fit(fairface_embeds, fairface_race_labels)
+        
+        # if there is no mpr_stuffs folder, make it
+        if not os.path.exists('./mpr_stuffs'):
+            os.makedirs('./mpr_stuffs')
 
         # save clf_age, clf_gender and clf_race
-        # with open('/n/holylabs/LABS/calmon_lab/Lab/datasets/mpr_stuffs/clf_age.pkl', 'wb') as f:
-        #     pickle.dump(clf_age, f)
-        # with open('/n/holylabs/LABS/calmon_lab/Lab/datasets/mpr_stuffs/clf_gender.pkl', 'wb') as f:
-        #     pickle.dump(clf_gender, f)
+        with open('./mpr_stuffs/clf_age.pkl', 'wb') as f:
+            pickle.dump(clf_age, f)
+        with open('./mpr_stuffs/clf_gender.pkl', 'wb') as f:
+            pickle.dump(clf_gender, f)
         if args.race_reduce:
-            with open('/n/holylabs/LABS/calmon_lab/Lab/datasets/mpr_stuffs/clf_race2.pkl', 'wb') as f:
+            with open('./mpr_stuffs/clf_race2.pkl', 'wb') as f:
                 pickle.dump(clf_race, f)
         else:
-            with open('/n/holylabs/LABS/calmon_lab/Lab/datasets/mpr_stuffs/clf_race.pkl', 'wb') as f:
+            with open('./mpr_stuffs/clf_race.pkl', 'wb') as f:
                 pickle.dump(clf_race, f)
     else:
-        with open(f'/n/holylabs/LABS/calmon_lab/Lab/datasets/mpr_stuffs/clfs/fairface_{args.vision_encoder}_clf_age.pkl', 'rb') as f:
+        with open(f'./mpr_stuffs/clfs/fairface_{args.vision_encoder}_clf_age.pkl', 'rb') as f:
             clf_age = pickle.load(f)
-        with open(f'/n/holylabs/LABS/calmon_lab/Lab/datasets/mpr_stuffs/clfs/fairface_{args.vision_encoder}_clf_gender.pkl', 'rb') as f:
+        with open(f'./mpr_stuffs/clfs/fairface_{args.vision_encoder}_clf_gender.pkl', 'rb') as f:
             clf_gender = pickle.load(f)
-        with open(f'/n/holylabs/LABS/calmon_lab/Lab/datasets/mpr_stuffs/clfs/fairface_{args.vision_encoder}_clf_race.pkl', 'rb') as f:
+        with open(f'./mpr_stuffs/clfs/fairface_{args.vision_encoder}_clf_race.pkl', 'rb') as f:
             clf_race = pickle.load(f)
 
     print("Train age:", clf_age.score(fairface_embeds, fairface_age_labels))

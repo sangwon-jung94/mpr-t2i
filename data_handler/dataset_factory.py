@@ -36,13 +36,10 @@ class GenericDataset(data.Dataset):
     def __init__(self, args, split):
         self.args = args
         self.split = split
-        self.dataset_root = f'/n/holylabs/LABS/calmon_lab/Lab/datasets/'
+        self.dataset_root = f'./datasets/'
         # self.face_detect = True if hasattr(self.args, 'face_detect') and self.args.face_detect else False
         self.face_detect = False
         
-        # if self.face_detect:
-            # self.bbox_dic = self._load_bbox_dic()
-
     def _load_bbox_dic(self):
         # Make sure this function should not used in mscoco
         path = os.path.join(self.dataset_path,'bbox_dic.pkl')
