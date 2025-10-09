@@ -21,11 +21,16 @@ python train_linear_probes.py --train --vision-encoder CLIP
 ```
 
 ### Compute MPR score
-To compute MPR, you need to prepare generate images and reference datasets or statistics. You should set the dataset path for the generated images in the argument "dataset-path". For the reference dataset, put the dataset in the "./dataset". 
-You can set the function class using 'linear' or 'dt2' for the linear functions or decision trees. The number following 'dt' means the depth of decision trees. 
-The "pool-size" is the number of generated images and the "resampling-sze" is the number of images resampled when using the bootstrapping algorithm: the images are samples with "n-resampling" times.
+To compute MPR, you need to prepare both the generated images and a reference dataset (or precomputed statistics).
+Specify the path to the generated images using the argument --dataset-path.
+For the reference dataset, place the dataset files inside the ./dataset directory.
+
+You can choose the function class by setting --functionclass to either 'linear' or 'dtX', where 'dtX' denotes a decision tree of depth X (e.g., 'dt2' for a depth-2 tree).
+
+The --pool-size argument specifies the total number of generated images, while --resampling-size determines how many images are resampled during the bootstrapping process. The resampling procedure is repeated --n-resampling times.
 ```
 python main_eval.py --dataset-path ../representational-generation/datasets/scratch/SD_14/CEO --refer-dataset fairface --functionclass dt1 --mpr-group gender --target-concept CEO --pool-size 500  --bootstrapping --resampling-size 500 --n-resampling 10 --mpr-onehot --no-wandb
 ```
+
 
 
